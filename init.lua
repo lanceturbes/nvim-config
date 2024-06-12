@@ -20,6 +20,8 @@ vim.opt.expandtab = true
 vim.wo.relativenumber = true
 vim.g.mapleader = " "
 vim.opt.colorcolumn = { 80, 120 }
+vim.opt.showmode = false
+vim.opt.scrolloff = 8
 -- USER SETTINGS END
 
 -- PLUGIN MANAGER START
@@ -39,6 +41,8 @@ require("lazy").setup({
 			options = {
 				-- theme = "vscode",
 				theme = "rose-pine",
+				component_separators = { left = "", right = "" },
+				section_separators = { left = "", right = "" },
 			},
 		},
 	},
