@@ -58,6 +58,15 @@ require("lazy").setup({
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.8",
 		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = {
+			defaults = {
+				file_ignore_patterns = {
+					"node_modules",
+					"obj",
+					"bin",
+				},
+			},
+		},
 	},
 	{ "tpope/vim-fugitive" },
 	{
@@ -65,6 +74,21 @@ require("lazy").setup({
 		event = "InsertEnter",
 		config = true,
 		opts = {},
+	},
+	{
+		"nvim-treesitter/nvim-treesitter",
+		init = function()
+			require("nvim-treesitter.configs").setup({
+				highlight = {
+					enable = true,
+					-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+					-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+					-- Using this option may slow down your editor, and you may see some duplicate highlights.
+					-- Instead of true it can also be a list of languages
+					additional_vim_regex_highlighting = false,
+				},
+			})
+		end,
 	},
 })
 -- PLUGIN MANAGER END
@@ -76,6 +100,7 @@ lsp_zero.on_attach(function(client, bufnr)
 	-- see :help lsp-zero-keybindings
 	-- to learn the available actions
 	lsp_zero.default_keymaps({ buffer = bufnr })
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true })
 end)
 
 -- to learn how to use mason.nvim
