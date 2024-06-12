@@ -34,31 +34,65 @@ require("lazy").setup({
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
+		opts = {
+			options = {
+				theme = "vscode",
+			},
+		},
 	},
-	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
-	{ "lewis6991/gitsigns.nvim" },
-	{ "Mofiqul/vscode.nvim" },
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		main = "ibl",
+		opts = {
+			indent = { char = "|" },
+		},
+	},
+	{ "lewis6991/gitsigns.nvim", opts = {} },
+	{
+		"Mofiqul/vscode.nvim",
+		init = function()
+			require("vscode").load("dark")
+		end,
+	},
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.8",
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	{ "tpope/vim-fugitive" },
-})
--- PLUGIN MANAGER END
-
--- COLOR SCHEME START
-require("vscode").load("dark")
-
-require("lualine").setup({
-	options = {
-		theme = "vscode",
-		icons_enabled = false,
-		component_separators = { left = "", right = "" },
-		section_separators = { left = "", right = "" },
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = true,
+		opts = {},
+	},
+	{
+		"romgrk/barbar.nvim",
+		dependencies = {
+			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
+			"nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
+		},
+		init = function()
+			vim.g.barbar_auto_setup = false
+			local map = vim.api.nvim_set_keymap
+			local opts = { noremap = true, silent = true }
+			map("n", "<S-h>", "<Cmd>BufferPrevious<CR>", opts)
+			map("n", "<S-l>", "<Cmd>BufferNext<CR>", opts)
+		end,
+		opts = {},
+		version = "^1.0.0", -- optional: only update when a new 1.x version is released
+	},
+	{
+		"nvim-tree/nvim-tree.lua",
+		opts = {},
+		init = function()
+			local map = vim.api.nvim_set_keymap
+			local opts = { noremap = true, silent = true }
+			map("n", "<leader>e", "<Cmd>NvimTreeOpen<CR>", opts)
+		end,
 	},
 })
--- COLOR SCHEME END
+-- PLUGIN MANAGER END
 
 -- LANGUAGE SERVER START
 local lsp_zero = require("lsp-zero")
@@ -84,16 +118,16 @@ require("mason-lspconfig").setup({
 -- FORMAT ON SAVE START
 require("conform").setup({
 	formatters_by_ft = {
-		lua = { "stylua" },
-		javascript = { "prettierd" },
-		typescript = { "prettierd" },
-		typescriptreact = { "prettierd" },
-		javascriptreact = { "prettierd" },
 		cs = { "csharpier" },
-		vue = { "prettierd" },
 		css = { "prettierd" },
+		javascript = { "prettierd" },
+		javascriptreact = { "prettierd" },
 		json = { "prettierd" },
 		jsonc = { "prettierd" },
+		lua = { "stylua" },
+		typescript = { "prettierd" },
+		typescriptreact = { "prettierd" },
+		vue = { "prettierd" },
 	},
 	format_on_save = {
 		timeout_ms = 500,
@@ -109,11 +143,3 @@ vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
 -- FUZZY FINDER END
-
--- SYMBOLS START
-require("ibl").setup({
-	indent = { char = "|" },
-})
-
-require("gitsigns").setup()
--- SYMBOLS END
