@@ -78,13 +78,20 @@ require("lazy").setup({
 			local opts = { noremap = true, silent = true }
 			map("n", "<S-h>", "<Cmd>BufferPrevious<CR>", opts)
 			map("n", "<S-l>", "<Cmd>BufferNext<CR>", opts)
+			map("n", "<leader>q", "<Cmd>BufferClose<CR>", opts)
 		end,
 		opts = {},
 		version = "^1.0.0", -- optional: only update when a new 1.x version is released
 	},
 	{
 		"nvim-tree/nvim-tree.lua",
-		opts = {},
+		opts = {
+			view = {
+				float = {
+					enable = true,
+				},
+			},
+		},
 		init = function()
 			local map = vim.api.nvim_set_keymap
 			local opts = { noremap = true, silent = true }
