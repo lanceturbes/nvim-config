@@ -19,6 +19,7 @@ vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.wo.relativenumber = true
 vim.g.mapleader = " "
+vim.opt.colorcolumn = { 80, 120 }
 -- USER SETTINGS END
 
 -- PLUGIN MANAGER START
@@ -36,7 +37,8 @@ require("lazy").setup({
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			options = {
-				theme = "vscode",
+				-- theme = "vscode",
+				theme = "rose-pine",
 			},
 		},
 	},
@@ -48,10 +50,23 @@ require("lazy").setup({
 		},
 	},
 	{ "lewis6991/gitsigns.nvim", opts = {} },
+	-- {
+	-- 	"Mofiqul/vscode.nvim",
+	-- 	init = function()
+	-- 		require("vscode").load("dark")
+	-- 	end,
+	-- },
 	{
-		"Mofiqul/vscode.nvim",
+		"rose-pine/neovim",
+		name = "rose-pine",
+		opts = {
+			styles = {
+				italic = false,
+				transparency = true,
+			},
+		},
 		init = function()
-			require("vscode").load("dark")
+			vim.cmd("colorscheme rose-pine")
 		end,
 	},
 	{
