@@ -66,38 +66,6 @@ require("lazy").setup({
 		config = true,
 		opts = {},
 	},
-	{
-		"romgrk/barbar.nvim",
-		dependencies = {
-			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
-			"nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
-		},
-		init = function()
-			vim.g.barbar_auto_setup = false
-			local map = vim.api.nvim_set_keymap
-			local opts = { noremap = true, silent = true }
-			map("n", "<S-h>", "<Cmd>BufferPrevious<CR>", opts)
-			map("n", "<S-l>", "<Cmd>BufferNext<CR>", opts)
-			map("n", "<leader>q", "<Cmd>BufferClose<CR>", opts)
-		end,
-		opts = {},
-		version = "^1.0.0", -- optional: only update when a new 1.x version is released
-	},
-	{
-		"nvim-tree/nvim-tree.lua",
-		opts = {
-			view = {
-				float = {
-					enable = true,
-				},
-			},
-		},
-		init = function()
-			local map = vim.api.nvim_set_keymap
-			local opts = { noremap = true, silent = true }
-			map("n", "<leader>e", "<Cmd>NvimTreeOpen<CR>", opts)
-		end,
-	},
 })
 -- PLUGIN MANAGER END
 
@@ -150,3 +118,11 @@ vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
 -- FUZZY FINDER END
+
+-- MAPPINGS START
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<S-h>", "<Cmd>bNext<CR>", opts)
+vim.keymap.set("n", "<S-l>", "<Cmd>bprevious<CR>", opts)
+vim.keymap.set("n", "<leader>q", "<Cmd>bd<CR>", opts)
+vim.keymap.set("n", "<leader>e", "<Cmd>Ex<CR>", opts)
+-- MAPPINGS END
