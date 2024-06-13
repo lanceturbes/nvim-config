@@ -24,27 +24,97 @@ vim.opt.showmode = false
 vim.opt.scrolloff = 8
 -- USER SETTINGS END
 
+-- MAPPINGS START
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<S-h>", "<Cmd>bNext<CR>", opts)
+vim.keymap.set("n", "<S-l>", "<Cmd>bprevious<CR>", opts)
+vim.keymap.set("n", "<leader>q", "<Cmd>bd<CR>", opts)
+vim.keymap.set("n", "<leader>e", "<Cmd>Ex<CR>", opts)
+-- MAPPINGS END
+
 -- PLUGIN MANAGER START
 require("lazy").setup({
-	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
-	{ "williamboman/mason.nvim" },
-	{ "williamboman/mason-lspconfig.nvim" },
-	{ "neovim/nvim-lspconfig" },
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "hrsh7th/nvim-cmp" },
-	{ "L3MON4D3/LuaSnip" },
-	{ "stevearc/conform.nvim" },
+	{
+		"VonHeikemen/lsp-zero.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+			"neovim/nvim-lspconfig",
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/nvim-cmp",
+			"L3MON4D3/LuaSnip",
+		},
+		init = function()
+			local lsp_zero = require("lsp-zero")
+			lsp_zero.on_attach(function(client, bufnr)
+				-- see :help lsp-zero-keybindings
+				lsp_zero.default_keymaps({ buffer = bufnr })
+				vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true })
+			end)
+			require("mason").setup({})
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"csharp_ls",
+					"csharpier",
+					"eslint",
+					"gopls",
+					"kotlin_language_server",
+					"ktlint",
+					"lua_ls",
+					"prettierd",
+					"rust_analyzer",
+					"stylua",
+					"tsserver",
+				},
+				handlers = {
+					function(server_name)
+						require("lspconfig")[server_name].setup({})
+					end,
+				},
+			})
+		end,
+	},
+	{
+		"stevearc/conform.nvim",
+		opts = {
+			formatters_by_ft = {
+				cs = { "csharpier" },
+				css = { "prettierd" },
+				javascript = { "prettierd" },
+				javascriptreact = { "prettierd" },
+				json = { "prettierd" },
+				jsonc = { "prettierd" },
+				kotlin = { "ktlint" },
+				lua = { "stylua" },
+				typescript = { "prettierd" },
+				typescriptreact = { "prettierd" },
+				vue = { "prettierd" },
+			},
+			format_on_save = {
+				timeout_ms = 500,
+				lsp_fallback = true,
+			},
+		},
+	},
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			options = {
-				-- theme = "vscode",
-				theme = "rose-pine",
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 			},
 		},
+	},
+	{
+		"rebelot/kanagawa.nvim",
+		opts = {
+			transparent = true,
+		},
+		init = function()
+			vim.cmd("colorscheme kanagawa-dragon")
+		end,
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -53,25 +123,9 @@ require("lazy").setup({
 			indent = { char = "|" },
 		},
 	},
-	{ "lewis6991/gitsigns.nvim", opts = {} },
-	-- {
-	-- 	"Mofiqul/vscode.nvim",
-	-- 	init = function()
-	-- 		require("vscode").load("dark")
-	-- 	end,
-	-- },
 	{
-		"rose-pine/neovim",
-		name = "rose-pine",
-		opts = {
-			styles = {
-				italic = false,
-				transparency = true,
-			},
-		},
-		init = function()
-			vim.cmd("colorscheme rose-pine")
-		end,
+		"lewis6991/gitsigns.nvim",
+		opts = {},
 	},
 	{
 		"nvim-telescope/telescope.nvim",
@@ -86,6 +140,13 @@ require("lazy").setup({
 				},
 			},
 		},
+		init = function()
+			local builtin = require("telescope.builtin")
+			vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
+			vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+			vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
+			vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
+		end,
 	},
 	{ "tpope/vim-fugitive" },
 	{
@@ -98,12 +159,22 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		init = function()
 			require("nvim-treesitter.configs").setup({
+				ensure_installed = {
+					"c_sharp",
+					"css",
+					"html",
+					"javascript",
+					"json",
+					"jsonc",
+					"kotlin",
+					"lua",
+					"tsx",
+					"typescript",
+					"vimdoc",
+					"vue",
+				},
 				highlight = {
 					enable = true,
-					-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-					-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-					-- Using this option may slow down your editor, and you may see some duplicate highlights.
-					-- Instead of true it can also be a list of languages
 					additional_vim_regex_highlighting = false,
 				},
 			})
@@ -111,62 +182,3 @@ require("lazy").setup({
 	},
 })
 -- PLUGIN MANAGER END
-
--- LANGUAGE SERVER START
-local lsp_zero = require("lsp-zero")
-
-lsp_zero.on_attach(function(client, bufnr)
-	-- see :help lsp-zero-keybindings
-	-- to learn the available actions
-	lsp_zero.default_keymaps({ buffer = bufnr })
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true })
-end)
-
--- to learn how to use mason.nvim
--- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
-require("mason").setup({})
-require("mason-lspconfig").setup({
-	handlers = {
-		function(server_name)
-			require("lspconfig")[server_name].setup({})
-		end,
-	},
-})
--- LANGUAGE SERVER END
-
--- FORMAT ON SAVE START
-require("conform").setup({
-	formatters_by_ft = {
-		cs = { "csharpier" },
-		css = { "prettierd" },
-		javascript = { "prettierd" },
-		javascriptreact = { "prettierd" },
-		json = { "prettierd" },
-		jsonc = { "prettierd" },
-		lua = { "stylua" },
-		typescript = { "prettierd" },
-		typescriptreact = { "prettierd" },
-		vue = { "prettierd" },
-	},
-	format_on_save = {
-		timeout_ms = 500,
-		lsp_fallback = true,
-	},
-})
--- FORMAT ON SAVE END
-
--- FUZZY FINDER START
-local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
-vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
-vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
--- FUZZY FINDER END
-
--- MAPPINGS START
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<S-h>", "<Cmd>bNext<CR>", opts)
-vim.keymap.set("n", "<S-l>", "<Cmd>bprevious<CR>", opts)
-vim.keymap.set("n", "<leader>q", "<Cmd>bd<CR>", opts)
-vim.keymap.set("n", "<leader>e", "<Cmd>Ex<CR>", opts)
--- MAPPINGS END
